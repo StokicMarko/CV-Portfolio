@@ -7,7 +7,7 @@ export default function Hero() {
     <section id="home" className="hero">
       <BoidsBackground />
       <div className="hero-content">
-        <img className="hero-image" src="/profile.JPG" alt="Picture of Marko Stokic" />
+        <img className="hero-image" src="./profile.JPG" alt="Picture of Marko Stokic" />
         <h1>{site.name}</h1>
         <p className="hero-tagline">{site.tagline}</p>
         <div className="hero-actions">
