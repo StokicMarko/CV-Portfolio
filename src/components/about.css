@@ -1,0 +1,13 @@
+.about-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 42rem;
+}
+
+.about-text p {
+  color: #e2e8f0;
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: justify;
+}

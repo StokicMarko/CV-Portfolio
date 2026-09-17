@@ -1,0 +1,53 @@
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f0f1a;
+  color: #a5b4fc;
+}
+
+.loader-route {
+  /* Path length is ~29 units in this viewBox; 40 covers it with room. */
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: draw 900ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+}
+
+.loader-nodes {
+  opacity: 0;
+  animation: fade-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 820ms forwards;
+}
+
+.loader.is-leaving .loader-mark {
+  animation: pop-out 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.loader.is-leaving {
+  animation: veil 320ms cubic-bezier(0.22, 1, 0.36, 1) 120ms forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+@keyframes veil {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
