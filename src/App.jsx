@@ -1,3 +1,4 @@
+import useLenis from "./hooks/useLenis";
 import Loader from "./components/Loader";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
@@ -7,6 +8,8 @@ import Resume from "./components/Resume";
 import Footer from "./components/Footer";
 
 export default function App() {
+  useLenis();
+
   return (
     <>
       <Loader />

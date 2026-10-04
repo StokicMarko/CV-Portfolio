@@ -3,6 +3,7 @@
 A React rewrite of the original [CV-Portfolio](https://github.com/StokicMarko/CV-Portfolio) HTML/CSS site. It keeps the same content and purple/indigo palette, but is now a single scrolling page (like the structure of portfilo-livid.vercel.app) with two effects borrowed from v4.elejeune.me:
 
 - **Background**: a canvas flocking simulation (boids), recolored to the site's purple accent, layered behind the hero.
+- **Smooth scroll + projects**: [Lenis](https://lenis.dev/) drives smooth scrolling site-wide, and the projects section is a pinned stack of cards that slide in as you scroll (styled after the "Lenis brings the heat" section on lenis.dev). Reduced-motion users get a plain card grid instead.
 - **Loading**: a one-time SVG intro that draws a route and fades in, shown once per session.
 
 ## Getting started

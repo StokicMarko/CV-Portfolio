@@ -14,43 +14,52 @@ export const site = {
 
 export const projects = [
   {
-    title: "Chess Game",
-    icon: "Swords",
-    tech: "Java",
+    title: "Portfolio",
+    icon: "LayoutTemplate",
+    tech: "React, Vite, Lenis, Canvas",
     description:
-      "A classic chess game playable for 2 players with a GUI interface.",
-    url: "https://github.com/StokicMarko/chess-2018",
+      "This site: a single-page portfolio with a canvas flocking background, an SVG intro and smooth, scroll-driven project cards.",
+    url: "https://github.com/StokicMarko/CV-Portfolio",
   },
   {
-    title: "Path Finder",
-    icon: "Waypoints",
-    tech: "Java",
-    description: "A visual pathfinding simulator with a GUI interface.",
-    url: "https://github.com/StokicMarko/PathFinding",
+    title: "Kingdom Simulator",
+    icon: "Castle",
+    tech: "Java, Concurrency, Design Patterns",
+    description:
+      "A multithreaded kingdom simulation with miners, transporters and a guarded treasure room, built on Singleton, Multiton, Proxy, Adapter, Producer-Consumer and Readers-Writers patterns.",
+    url: "https://github.com/StokicMarko/kingdom-simulator",
   },
   {
-    title: "Hangman",
-    icon: "Dices",
-    tech: "Java",
+    title: "Forum-ish",
+    icon: "MessagesSquare",
+    tech: "C#, .NET, Blazor, EF Core, SQLite",
     description:
-      "A console-based hangman game where players guess random words with limited attempts.",
-    url: "https://github.com/StokicMarko/Impiccato-Hangman",
+      "A full-stack forum built step by step: from in-memory repositories to a REST API, a Blazor front-end, authentication and Entity Framework Core. Work in progress.",
+    url: "https://github.com/StokicMarko/Forum-ish",
   },
   {
     title: "Ruu",
-    icon: "BarChart3",
-    tech: "Electron, Node.js, MongoDB, Riot Games API",
+    icon: "ChartColumn",
+    tech: "Electron, Node.js, Express, Sequelize, Riot API",
     description:
-      "A desktop app for League of Legends statistics, built with Electron. Uses a Node.js server and MongoDB to process and store data from the Riot Games API.",
+      "A desktop client for League of Legends statistics: summoner profiles, match details and server-wide dashboards, backed by a small Express service that talks to the Riot Games API.",
     url: "https://github.com/StokicMarko/ruu-lol-statistic-app",
   },
   {
-    title: "Torrent Client",
-    icon: "Network",
-    tech: "C#",
+    title: "LLM Note Normalizer",
+    icon: "Sparkles",
+    tech: "Python, Claude API",
     description:
-      "A lightweight torrent client built in C#, capable of downloading files through a console interface.",
-    url: null,
+      "Turns messy artwork notes like \"3 pcs - scala 1/20\" into clean, validated JSON using an LLM, with a test set and a needs-review flag for doubtful answers.",
+    url: "https://github.com/StokicMarko/llm-note-normalizer",
+  },
+  {
+    title: "Chess Game",
+    icon: "Swords",
+    tech: "Java, Swing",
+    description:
+      "A two-player local chess game with a GUI, written in high school in 2018 and preserved as it was.",
+    url: "https://github.com/StokicMarko/chess-2018",
   },
 ];
 
