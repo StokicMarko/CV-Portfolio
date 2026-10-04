@@ -10,12 +10,22 @@ import {
 } from "../data/site";
 import "./resume.css";
 
-function Entry({ title, place, period, description }) {
+function Entry({ title, place, period, instagram, description }) {
   return (
     <div className="entry">
       <strong>{title}</strong>
       {place && <span className="entry-place">{place}</span>}
       {period && <em className="entry-period">{period}</em>}
+      {instagram && (
+        <a
+          className="entry-link"
+          href={`https://www.instagram.com/${instagram}/`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Instagram: @{instagram}
+        </a>
+      )}
       {description && <p>{description}</p>}
     </div>
   );
@@ -30,8 +40,7 @@ export default function Resume() {
       <div className="resume-card personal-info">
         <h3 className="name-title">{site.name}</h3>
         <p className="subtitle">
-          Software Technology Engineering Student | VIA University College,
-          Denmark
+          Software Technology Engineering Student – Full Stack Developer
         </p>
         <div className="contact-info">
           <p>

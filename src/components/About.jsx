@@ -13,15 +13,18 @@ export default function About() {
           problems, which naturally led me toward software development and,
           more recently, an interest in cybersecurity. I want to keep
           improving my skills and learn how to make systems safer and more
-          reliable.
+          reliable. Alongside my studies I work as a student frontend
+          developer and as a programming tutor, helping first-year students
+          with programming fundamentals.
         </p>
         <p>
           Outside of my studies, I like keeping active: I go to the gym
           about four times a week, which helps me stay focused and balanced.
-          I also spend some of my time volunteering at VIA's cafeteria and
-          with Pangaea Youth, where I help organize social events like
-          cooking nights, workshops, and movie sessions to bring people
-          together and create good vibes.
+          I also spend some of my time volunteering as a barista at VIA's
+          campus café, where I am preparing to take on a management role, as
+          Vice-President of ESG (Engineer Social Games), and with Pangaea
+          Youth, organizing social events to bring people together and create
+          good vibes.
         </p>
         <p>
           In my free time, I am a big fan of board games. I love strategy,

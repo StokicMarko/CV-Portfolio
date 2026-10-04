@@ -77,6 +77,20 @@
   font-size: 0.85rem;
 }
 
+.entry-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  color: #a5b4fc;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.entry-link:hover {
+  text-decoration: underline;
+}
+
 .entry p {
   margin-top: 0.3rem;
 }
