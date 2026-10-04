@@ -1,5 +1,6 @@
 import useLenis from "./hooks/useLenis";
 import Loader from "./components/Loader";
+import ContourBackground from "./components/ContourBackground";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Projects from "./components/Projects";
@@ -14,6 +15,7 @@ export default function App() {
     <>
       <Loader />
       <div className="app-shell">
+        <ContourBackground />
         <Nav />
         <Hero />
         <Projects />

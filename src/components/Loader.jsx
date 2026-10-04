@@ -41,6 +41,11 @@ export default function Loader() {
     return () => window.clearTimeout(doneTimer);
   }, [phase]);
 
+  // The home animations wait for this flag (see the .wipe rules in hero.css)
+  useEffect(() => {
+    if (phase === "done") document.documentElement.classList.add("is-loaded");
+  }, [phase]);
+
   if (phase === "done" || phase === "idle") return null;
 
   return (

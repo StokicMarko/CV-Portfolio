@@ -1,10 +1,10 @@
 # Marko Stokic, Portfolio (React)
 
-A React rewrite of the original [CV-Portfolio](https://github.com/StokicMarko/CV-Portfolio) HTML/CSS site. It keeps the same content and purple/indigo palette, but is now a single scrolling page (like the structure of portfilo-livid.vercel.app) with two effects borrowed from v4.elejeune.me:
+A React rewrite of the original [CV-Portfolio](https://github.com/StokicMarko/CV-Portfolio) HTML/CSS site. It keeps the same content and purple/indigo palette, but is now a single scrolling page (like the structure of portfilo-livid.vercel.app) with effects borrowed from v4.elejeune.me and landonorris.com:
 
-- **Background**: a canvas flocking simulation (boids), recolored to the site's purple accent, layered behind the hero.
+- **Background**: a full-screen WebGL shader draws a few slowly drifting, dark topographic contour lines over the animated purple gradient (the cursor only nudges them very slightly), inspired by landonorris.com. It falls back to the plain gradient without WebGL2 and draws a still frame for reduced-motion users.
 - **Smooth scroll + projects**: [Lenis](https://lenis.dev/) drives smooth scrolling site-wide, and the projects section is a pinned stack of cards that slide in as you scroll (styled after the "Lenis brings the heat" section on lenis.dev). Reduced-motion users get a plain card grid instead.
-- **Loading**: a one-time SVG intro that draws a route and fades in, shown once per session.
+- **Loading**: TODO
 
 ## Getting started
 

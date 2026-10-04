@@ -1,0 +1,88 @@
+.colophon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 3rem 4.5rem;
+  margin-top: 2.5rem;
+}
+
+.colophon-title {
+  margin-bottom: 1rem;
+  font-family: "Unbounded", "Inter", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.colophon-list {
+  list-style: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.colophon-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1.1rem;
+  padding: 1.1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  transition:
+    padding 0.35s var(--ease-swift),
+    background 0.35s ease;
+}
+
+.colophon-row.is-link:hover {
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.colophon-num {
+  min-width: 1.6rem;
+  font-family: "Anton", "Impact", sans-serif;
+  font-size: 1.15rem;
+  color: var(--color-accent);
+}
+
+.colophon-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.colophon-name {
+  font-family: "Unbounded", "Inter", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #f1f5f9;
+}
+
+.colophon-note {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+.colophon-arrow {
+  align-self: center;
+  flex-shrink: 0;
+  color: rgba(241, 245, 249, 0.45);
+  transition:
+    color 0.3s ease,
+    transform 0.35s var(--ease-swift);
+}
+
+.colophon-row.is-link:hover .colophon-arrow {
+  color: var(--color-accent);
+  transform: translate(3px, -3px);
+}
+
+@media screen and (max-width: 56rem) {
+  .colophon-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}

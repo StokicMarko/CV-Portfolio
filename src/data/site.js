@@ -206,6 +206,41 @@ export const volunteer = [
   },
 ];
 
+// Shown in the Colophon section. `url` is optional; add as many
+// inspirations as you like and `note` says what was taken from each.
+export const credits = {
+  builtWith: [
+    { name: "React", url: "https://react.dev", note: "UI" },
+    { name: "Vite", url: "https://vite.dev", note: "Build tool" },
+    { name: "Lenis", url: "https://lenis.dev", note: "Smooth scrolling" },
+    { name: "Lucide", url: "https://lucide.dev", note: "Icons" },
+    { name: "WebGL", note: "Custom shader for the contour-line background" },
+    { name: "GitHub Pages", url: "https://pages.github.com", note: "Hosting" },
+  ],
+  inspiredBy: [
+    {
+      name: "lenis.dev",
+      url: "https://lenis.dev",
+      note: "The pinned stack of project cards and the scroll cue",
+    },
+    {
+      name: "landonorris.com",
+      url: "https://landonorris.com",
+      note: "Contour-line background and the curtain-wipe intro",
+    },
+    {
+      name: "v4.elejeune.me",
+      url: "https://v4.elejeune.me",
+      note: "The loading intro",
+    },
+    {
+      name: "portfilo-livid.vercel.app",
+      url: "https://portfilo-livid.vercel.app",
+      note: "The single scrolling page structure",
+    },
+  ],
+};
+
 export const nav = [
   { label: "Home", href: "#home" },
   { label: "Projects", href: "#projects" },
