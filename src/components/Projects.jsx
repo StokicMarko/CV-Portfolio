@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   LayoutTemplate,
   Castle,
@@ -6,10 +6,13 @@ import {
   ChartColumn,
   Sparkles,
   Swords,
+  Waves,
   Code,
 } from "lucide-react";
 import { projects } from "../data/site";
 import { getLenis } from "../hooks/useLenis";
+import { assetUrl } from "../utils/assetUrl";
+import ProjectStats from "./ProjectStats";
 import "./projects.css";
 
 const ICONS = {
@@ -19,23 +22,22 @@ const ICONS = {
   ChartColumn,
   Sparkles,
   Swords,
+  Waves,
 };
 
 const pad = (n) => String(n).padStart(2, "0");
 const iconFor = (project) => ICONS[project.icon] ?? Code;
+const linkOf = (project) => project.url || project.demo;
 
-/**
- * Pinned card stack: the track is several viewports tall, the stage sticks to
- * the top while it scrolls, and each card slides onto the stack once the
- * scroll position passes its share of the track (scrolling back removes it).
- *
- * Clicking a buried card scrolls back to where it is the top card; clicking
- * the top card opens its GitHub page.
- */
 export default function Projects() {
+  const idPrefix = useId();
   const stackRef = useRef(null);
   const trackRef = useRef(null);
+  const focusRequest = useRef(null);
   const [active, setActive] = useState(0);
+  const [hovered, setHovered] = useState(null);
+  const [toggled, setToggled] = useState(null);
+  const [flipOwner, setFlipOwner] = useState(0);
   const [reduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -62,10 +64,21 @@ export default function Projects() {
     };
   }, [reduced]);
 
+  if (flipOwner !== active) {
+    setFlipOwner(active);
+    setHovered(null);
+    setToggled(null);
+  }
+
+  useEffect(() => {
+    if (!focusRequest.current) return;
+    document.getElementById(focusRequest.current)?.focus();
+    focusRequest.current = null;
+  }, [toggled]);
+
   const scrollToCard = (index) => {
     const track = trackRef.current;
     const travel = track.offsetHeight - window.innerHeight;
-    // Aim for the middle of the card's segment so it lands cleanly on top
     const top =
       track.getBoundingClientRect().top +
       window.scrollY +
@@ -76,12 +89,29 @@ export default function Projects() {
     else window.scrollTo({ top, behavior: "smooth" });
   };
 
-  const handleCard = (index, url) => {
-    if (reduced || index === active) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    } else {
-      scrollToCard(index);
+  const openProject = (project) => {
+    const link = linkOf(project);
+    if (link) window.open(link, "_blank", "noopener,noreferrer");
+  };
+
+  const handleCard = (index, project) => {
+    if (reduced) return openProject(project);
+    if (index !== active) return scrollToCard(index);
+    if (project.learned) {
+      return setToggled((current) => (current === index ? null : index));
     }
+    return openProject(project);
+  };
+
+  const showBack = (index, backId) => {
+    focusRequest.current = backId;
+    setToggled(index);
+  };
+
+  const showFront = (toggleId) => {
+    focusRequest.current = toggleId;
+    setHovered(null);
+    setToggled(null);
   };
 
   return (
@@ -121,6 +151,13 @@ export default function Projects() {
                 const Icon = iconFor(project);
                 const isTop = i === active;
                 const isBuried = i < active;
+                const showId = `${idPrefix}-show-${i}`;
+                const titleId = `${idPrefix}-title-${i}`;
+                const descriptionId = `${idPrefix}-description-${i}`;
+                const toggleId = `${idPrefix}-toggle-${i}`;
+                const backId = `${idPrefix}-back-${i}`;
+                const canFlip = !reduced && isTop && Boolean(project.learned);
+                const isFlipped = canFlip && (hovered === i || toggled === i);
 
                 return (
                   <article
@@ -129,7 +166,11 @@ export default function Projects() {
                       isTop ? " is-top" : ""
                     }${isBuried ? " is-buried" : ""}`}
                     style={{ "--i": i }}
-                    onClick={() => handleCard(i, project.url)}
+                    onClick={() => handleCard(i, project)}
+                    onPointerEnter={(e) => {
+                      if (canFlip && e.pointerType === "mouse") setHovered(i);
+                    }}
+                    onPointerLeave={() => setHovered(null)}
                     onKeyDown={(e) => {
                       if (isBuried && (e.key === "Enter" || e.key === " ")) {
                         e.preventDefault();
@@ -138,26 +179,110 @@ export default function Projects() {
                     }}
                     role={isBuried ? "button" : undefined}
                     tabIndex={isBuried ? 0 : undefined}
-                    aria-label={isBuried ? `Show ${project.title}` : undefined}
+                    aria-labelledby={isBuried ? `${showId} ${titleId}` : undefined}
+                    aria-describedby={isBuried ? descriptionId : undefined}
                   >
-                    <span className="stack-num">{pad(i + 1)}</span>
-                    <div className="stack-body">
-                      <h3 className="stack-title">
-                        <Icon size={24} strokeWidth={1.75} />
-                        {project.title}
-                      </h3>
-                      <p className="stack-tech">{project.tech}</p>
-                      <p className="stack-desc">{project.description}</p>
-                      <a
-                        className="stack-link"
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        tabIndex={isTop || reduced ? 0 : -1}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        View on GitHub →
-                      </a>
+                    {isBuried && (
+                      <span id={showId} className="visually-hidden">
+                        Show
+                      </span>
+                    )}
+                    <div
+                      className={`stack-flip${isFlipped ? " is-flipped" : ""}`}
+                    >
+                      <div className="stack-face stack-front" inert={isFlipped}>
+                        <span className="stack-num">{pad(i + 1)}</span>
+                        {project.image && (
+                          <img
+                            className="stack-shot"
+                            src={assetUrl(project.image)}
+                            alt={`Screenshot of ${project.title}`}
+                            loading="lazy"
+                          />
+                        )}
+                        <div className="stack-body">
+                          <h3 id={titleId} className="stack-title">
+                            <Icon size={24} strokeWidth={1.75} />
+                            {project.title}
+                          </h3>
+                          <ProjectStats project={project} />
+                          {project.highlight && (
+                            <p className="stack-highlight">
+                              {project.highlight}
+                            </p>
+                          )}
+                          <p id={descriptionId} className="stack-desc">
+                            {project.description}
+                          </p>
+                          {(project.url || project.demo || canFlip) && (
+                            <div className="stack-links">
+                              {project.url && (
+                                <a
+                                  className="stack-link"
+                                  href={project.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  tabIndex={isTop || reduced ? 0 : -1}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  View on GitHub →
+                                </a>
+                              )}
+                              {project.demo && (
+                                <a
+                                  className="stack-link"
+                                  href={project.demo}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  tabIndex={isTop || reduced ? 0 : -1}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Live demo →
+                                </a>
+                              )}
+                              {canFlip && (
+                                <button
+                                  id={toggleId}
+                                  type="button"
+                                  className="stack-link stack-flip-button"
+                                  aria-expanded={isFlipped}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    showBack(i, backId);
+                                  }}
+                                >
+                                  What I learned ↻
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {project.learned && (
+                        <div
+                          className="stack-face stack-back"
+                          role="group"
+                          aria-label="What I learned"
+                          inert={!reduced && !isFlipped}
+                        >
+                          <p className="stack-back-label">What I learned</p>
+                          <p className="stack-back-text">{project.learned}</p>
+                          {canFlip && (
+                            <button
+                              id={backId}
+                              type="button"
+                              className="stack-link stack-flip-button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                showFront(toggleId);
+                              }}
+                            >
+                              ↺ Back
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </article>
                 );

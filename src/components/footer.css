@@ -14,30 +14,16 @@
   gap: 1rem;
 }
 
-.footer-inner > p {
-  color: #f1f5f9;
-  font-size: 1.2rem;
-  font-weight: 600;
+.footer .section-header {
+  margin-bottom: 1rem;
 }
 
-.footer-links {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.footer-links a {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #a5b4fc;
-  transition: color 0.2s ease;
-}
-
-.footer-links a:hover {
-  color: #8659c9;
+.footer .cta-row {
+  justify-content: center;
 }
 
 .footer-copy {
-  color: #64748b;
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
   font-size: 0.85rem;
 }

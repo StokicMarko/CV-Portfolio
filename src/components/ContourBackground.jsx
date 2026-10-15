@@ -1,12 +1,15 @@
 import { useEffect, useRef } from "react";
 import "./contour.css";
 
+const FRAME_MS = 1000 / 30;
+const FRAME_TOLERANCE_MS = 2;
+const MAX_STEP_MS = FRAME_MS * 3;
+const PAUSE_AFTER_SELECTOR = "#projects";
+
 const VERTEX = `#version 300 es
 in vec2 a_pos;
 void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
 
-// Topographic contour lines: a domain-warped noise field, drawn as thin lines
-// wherever the field crosses a whole number. fwidth() keeps them ~1px wide.
 const FRAGMENT = `#version 300 es
 precision highp float;
 uniform vec2 u_res;
@@ -50,20 +53,16 @@ void main() {
   vec2 q = vec2(fbm(p + t), fbm(p + vec2(5.2, 1.3) - t));
   float f = fbm(p + 1.6 * q + t * 0.5);
 
-  // The cursor barely nudges the terrain around it
   float md = length(uv - u_mouse);
   f += 0.04 * exp(-md * md * 4.0);
 
-  // Few levels, so only a handful of long, calm lines
   float lv = f * 5.0;
   float g = abs(fract(lv - 0.5) - 0.5) / fwidth(lv);
   float line = 1.0 - smoothstep(0.3, 1.5, g);
 
-  // Every third line is an "index" contour, a little stronger
   float major = step(abs(mod(floor(lv + 0.5), 3.0)), 0.5);
   float alpha = line * (0.26 + 0.16 * major);
 
-  // Dark lines: they sit quietly below the text instead of competing with it
   vec3 col = vec3(0.03, 0.02, 0.14);
   outColor = vec4(col * alpha, alpha);
 }`;
@@ -72,18 +71,140 @@ function compile(gl, type, source) {
   const shader = gl.createShader(type);
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error(gl.getShaderInfoLog(shader));
-    return null;
-  }
   return shader;
 }
 
-/**
- * Fixed full-screen canvas behind the whole site. Without WebGL2 it renders
- * nothing and the page's gradient shows through. For prefers-reduced-motion
- * users it draws a single still frame.
- */
+function createProgram(gl) {
+  const program = gl.createProgram();
+  gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERTEX));
+  gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAGMENT));
+  gl.linkProgram(program);
+  return program;
+}
+
+function whenLinked(gl, program, isDisposed) {
+  const parallelCompile = gl.getExtension("KHR_parallel_shader_compile");
+
+  return new Promise((resolve) => {
+    const check = () => {
+      if (isDisposed()) {
+        resolve(false);
+        return;
+      }
+      const stillCompiling =
+        parallelCompile &&
+        !gl.getProgramParameter(program, parallelCompile.COMPLETION_STATUS_KHR);
+      if (stillCompiling) {
+        requestAnimationFrame(check);
+        return;
+      }
+      const linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+      if (!linked) console.error(gl.getProgramInfoLog(program));
+      resolve(linked);
+    };
+    check();
+  });
+}
+
+function startRendering(gl, canvas, program) {
+  gl.useProgram(program);
+
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 3, -1, -1, 3]),
+    gl.STATIC_DRAW,
+  );
+  const loc = gl.getAttribLocation(program, "a_pos");
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const u = (name) => gl.getUniformLocation(program, name);
+  const uRes = u("u_res");
+  const uTime = u("u_time");
+  const uMouse = u("u_mouse");
+  const uScroll = u("u_scroll");
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const mouse = { x: -10, y: -10, tx: -10, ty: -10 };
+  let raf = 0;
+  let clock = 0;
+  let previousFrame = 0;
+  let scrolledPastProjects = false;
+
+  const resize = () => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  };
+
+  const draw = () => {
+    mouse.x += (mouse.tx - mouse.x) * 0.1;
+    mouse.y += (mouse.ty - mouse.y) * 0.1;
+
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, clock / 1000);
+    gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.uniform1f(uScroll, window.scrollY / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+
+  const tick = (now) => {
+    raf = requestAnimationFrame(tick);
+    const elapsed = now - previousFrame;
+    if (elapsed < FRAME_MS - FRAME_TOLERANCE_MS) return;
+    clock += Math.min(elapsed, MAX_STEP_MS);
+    previousFrame = now;
+    draw();
+  };
+
+  const syncLoop = () => {
+    const shouldRun = !reduced && !document.hidden && !scrolledPastProjects;
+    if (shouldRun && !raf) {
+      previousFrame = performance.now();
+      raf = requestAnimationFrame(tick);
+    } else if (!shouldRun && raf) {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    }
+  };
+
+  const onPointer = (e) => {
+    mouse.tx = e.clientX / window.innerHeight;
+    mouse.ty = 1 - e.clientY / window.innerHeight;
+  };
+
+  const onResize = () => {
+    resize();
+    draw();
+  };
+
+  const projectsSection = document.querySelector(PAUSE_AFTER_SELECTOR);
+  const projectsObserver = new IntersectionObserver(([entry]) => {
+    scrolledPastProjects =
+      !entry.isIntersecting && entry.boundingClientRect.bottom <= 0;
+    syncLoop();
+  });
+  if (projectsSection) projectsObserver.observe(projectsSection);
+
+  resize();
+  draw();
+  syncLoop();
+  window.addEventListener("resize", onResize);
+  document.addEventListener("visibilitychange", syncLoop);
+  if (!reduced) window.addEventListener("pointermove", onPointer, { passive: true });
+
+  return () => {
+    cancelAnimationFrame(raf);
+    projectsObserver.disconnect();
+    window.removeEventListener("resize", onResize);
+    document.removeEventListener("visibilitychange", syncLoop);
+    window.removeEventListener("pointermove", onPointer);
+  };
+}
+
 export default function ContourBackground() {
   const canvasRef = useRef(null);
 
@@ -92,82 +213,17 @@ export default function ContourBackground() {
     const gl = canvas.getContext("webgl2", { antialias: false });
     if (!gl) return;
 
-    const vs = compile(gl, gl.VERTEX_SHADER, VERTEX);
-    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT);
-    if (!vs || !fs) return;
+    let disposed = false;
+    let stopRendering = () => {};
 
-    const program = gl.createProgram();
-    gl.attachShader(program, vs);
-    gl.attachShader(program, fs);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error(gl.getProgramInfoLog(program));
-      return;
-    }
-    gl.useProgram(program);
-
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 3, -1, -1, 3]),
-      gl.STATIC_DRAW,
-    );
-    const loc = gl.getAttribLocation(program, "a_pos");
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-
-    const u = (name) => gl.getUniformLocation(program, name);
-    const uRes = u("u_res");
-    const uTime = u("u_time");
-    const uMouse = u("u_mouse");
-    const uScroll = u("u_scroll");
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mouse = { x: -10, y: -10, tx: -10, ty: -10 };
-    let raf = 0;
-    const start = performance.now();
-
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      canvas.width = Math.round(window.innerWidth * dpr);
-      canvas.height = Math.round(window.innerHeight * dpr);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-    };
-
-    const draw = (now) => {
-      mouse.x += (mouse.tx - mouse.x) * 0.05;
-      mouse.y += (mouse.ty - mouse.y) * 0.05;
-
-      gl.uniform2f(uRes, canvas.width, canvas.height);
-      gl.uniform1f(uTime, reduced ? 0 : (now - start) / 1000);
-      gl.uniform2f(uMouse, mouse.x, mouse.y);
-      gl.uniform1f(uScroll, window.scrollY / 1000);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-      if (!reduced) raf = requestAnimationFrame(draw);
-    };
-
-    const onPointer = (e) => {
-      // Same space as the shader's uv: x and y both divided by the height
-      mouse.tx = e.clientX / window.innerHeight;
-      mouse.ty = 1 - e.clientY / window.innerHeight;
-    };
-
-    const onResize = () => {
-      resize();
-      if (reduced) draw(performance.now());
-    };
-
-    resize();
-    draw(performance.now());
-    window.addEventListener("resize", onResize);
-    if (!reduced) window.addEventListener("pointermove", onPointer, { passive: true });
+    const program = createProgram(gl);
+    whenLinked(gl, program, () => disposed).then((linked) => {
+      if (linked && !disposed) stopRendering = startRendering(gl, canvas, program);
+    });
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
-      window.removeEventListener("pointermove", onPointer);
+      disposed = true;
+      stopRendering();
     };
   }, []);
 

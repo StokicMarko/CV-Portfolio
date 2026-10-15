@@ -1,6 +1,5 @@
-import { Mail, Phone, MapPin } from "lucide-react";
 import {
-  site,
+  sections,
   skills,
   education,
   experience,
@@ -8,100 +7,122 @@ import {
   languages,
   volunteer,
 } from "../data/site";
+import SectionHeader from "./SectionHeader";
 import "./resume.css";
 
-function Entry({ title, place, period, instagram, description }) {
+function TimelineEntry({ title, place, period, instagram, description }) {
+  const [start, end] = period ? period.split(" - ") : [];
+
   return (
-    <div className="entry">
-      <strong>{title}</strong>
-      {place && <span className="entry-place">{place}</span>}
-      {period && <em className="entry-period">{period}</em>}
-      {instagram && (
-        <a
-          className="entry-link"
-          href={`https://www.instagram.com/${instagram}/`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Instagram: @{instagram}
-        </a>
-      )}
-      {description && <p>{description}</p>}
-    </div>
+    <li className="timeline-entry">
+      <p className="timeline-period">
+        {start && <span className="timeline-start">{start}</span>}
+        {end && (
+          <>
+            <span className="visually-hidden"> to </span>
+            <span className="timeline-end">{end}</span>
+          </>
+        )}
+      </p>
+      <div className="timeline-body">
+        <h3 className="timeline-title">{title}</h3>
+        {place && <p className="timeline-place">{place}</p>}
+        {description && <p className="timeline-description">{description}</p>}
+        {instagram && (
+          <a
+            className="entry-link"
+            href={`https://www.instagram.com/${instagram}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram: @{instagram}
+          </a>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function Timeline({ entries }) {
+  return (
+    <ol className="timeline">
+      {entries.map((entry) => (
+        <TimelineEntry key={entry.title} {...entry} />
+      ))}
+    </ol>
   );
 }
 
 export default function Resume() {
   return (
     <section id="resume" className="section">
-      <p className="section-eyebrow">Resume</p>
-      <h2 className="section-heading">Experience & background</h2>
-
-      <div className="resume-card personal-info">
-        <h3 className="name-title">{site.name}</h3>
-        <p className="subtitle">
-          Software Technology Engineering Student – Full Stack Developer
-        </p>
-        <div className="contact-info">
-          <p>
-            <Mail size={16} /> <a href={`mailto:${site.email}`}>{site.email}</a>
-          </p>
-          <p>
-            <Phone size={16} /> {site.phone}
-          </p>
-          <p>
-            <MapPin size={16} /> {site.location}
-          </p>
+      <div className="resume-timelines">
+        <div>
+          <SectionHeader
+            className="section-header--sub"
+            {...sections.experience}
+          />
+          <Timeline entries={experience} />
+        </div>
+        <div>
+          <SectionHeader
+            className="section-header--sub"
+            {...sections.education}
+          />
+          <Timeline entries={education} />
         </div>
       </div>
 
-      <div className="resume-card">
-        <h3>Technical Skills</h3>
-        {Object.entries(skills).map(([category, items]) => (
-          <p key={category}>
-            <strong>{category}:</strong> {items.join(", ")}
-          </p>
-        ))}
+      <div className="resume-block">
+        <h3 className="resume-subtitle">{sections.skills.title}</h3>
+        <div className="chip-groups">
+          {Object.entries(skills).map(([category, items]) => (
+            <div key={category} className="chip-group">
+              <h4 className="chip-group-label">{category}</h4>
+              <ul className="chips">
+                {items.map((item) => (
+                  <li key={item} className="chip">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="resume-card">
-        <h3>Education</h3>
-        {education.map((item) => (
-          <Entry key={item.title} {...item} />
-        ))}
+      <div className="resume-secondary">
+        <div className="resume-block">
+          <h3 className="resume-subtitle">{sections.certifications.title}</h3>
+          <ul className="achievements">
+            {certifications.map((item) => (
+              <li key={item.title}>
+                <strong>{item.title}</strong>
+                <span>{item.description}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="resume-block">
+          <h3 className="resume-subtitle">{sections.languages.title}</h3>
+          <ul className="chips">
+            {languages.map((item) => (
+              <li key={item.name} className="chip">
+                <strong>{item.name}</strong>
+                {item.level}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div className="resume-card">
-        <h3>Work Experience</h3>
-        {experience.map((item) => (
-          <Entry key={item.title} {...item} />
-        ))}
-      </div>
-
-      <div className="resume-card">
-        <h3>Projects & Certifications</h3>
-        {certifications.map((item) => (
-          <p key={item.title}>
-            <strong>{item.title}</strong>: {item.description}
-          </p>
-        ))}
-      </div>
-
-      <div className="resume-card">
-        <h3>Languages</h3>
-        {languages.map((item) => (
-          <p key={item.name}>
-            <strong>{item.name}</strong>: {item.level}
-          </p>
-        ))}
-      </div>
-
-      <div className="resume-card">
-        <h3>Volunteer Work</h3>
-        {volunteer.map((item) => (
-          <Entry key={item.title} {...item} />
-        ))}
-      </div>
+      <details className="resume-volunteer">
+        <summary>
+          <span className="resume-subtitle">{sections.volunteer.title}</span>
+        </summary>
+        <Timeline entries={volunteer} />
+      </details>
     </section>
   );
 }

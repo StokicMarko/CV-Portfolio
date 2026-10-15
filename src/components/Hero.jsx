@@ -1,41 +1,70 @@
+import { useEffect, useState } from "react";
 import { site } from "../data/site";
+import { assetUrl } from "../utils/assetUrl";
+import ActionRow from "./ActionRow";
 import "./hero.css";
 
-// Delay (in seconds) before each piece is wiped in, once the loader is done
 const delay = (d) => ({ "--d": `${d}s` });
 
 export default function Hero() {
   const [first, ...rest] = site.name.split(" ");
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const markScrolled = () => setHasScrolled(true);
+    window.addEventListener("scroll", markScrolled, {
+      once: true,
+      passive: true,
+    });
+    return () => window.removeEventListener("scroll", markScrolled);
+  }, []);
 
   return (
     <section id="home" className="hero">
       <div className="hero-inner">
         <div className="hero-copy">
           <h1 className="hero-name">
-            <span className="wipe" style={delay(0.1)}>
-              <span className="wipe-in hero-first">{first}</span>
+            <span className="mask" style={delay(0)}>
+              <span className="mask-in hero-first">{first}</span>
             </span>{" "}
-            <span className="wipe" style={delay(0.35)}>
-              <span className="wipe-in hero-last">{rest.join(" ")}</span>
+            <span className="mask" style={delay(0.06)}>
+              <span className="mask-in hero-last">{rest.join(" ")}</span>
             </span>
           </h1>
 
-          <p className="hero-tagline wipe" style={delay(0.7)}>
-            <span className="wipe-in">{site.tagline}</span>
+          <p className="hero-tagline mask" style={delay(0.14)}>
+            <span className="mask-in">{site.tagline}</span>
           </p>
 
-          <p className="hero-meta wipe" style={delay(0.9)}>
-            <span className="wipe-in">{site.location} · VIA University College</span>
+          <p className="hero-meta mask" style={delay(0.2)}>
+            <span className="mask-in">
+              {site.location} · VIA University College
+            </span>
           </p>
+
+          {site.availability && (
+            <p className="hero-availability rise" style={delay(0.26)}>
+              <span className="availability-dot" aria-hidden="true" />
+              {site.availability}
+            </p>
+          )}
+
+          <ActionRow className="rise" style={delay(0.32)} />
         </div>
 
         <div className="hero-photo">
-          <div className="hero-frame wipe" style={delay(0.3)}>
-            <img
-              className="hero-image wipe-in"
-              src="./profile.JPG"
-              alt="Picture of Marko Stokic"
-            />
+          <div className="hero-frame rise" style={delay(0.04)}>
+            <picture>
+              <source srcSet={assetUrl("profile-800.webp")} type="image/webp" />
+              <img
+                className="hero-image"
+                src={assetUrl("profile-800.jpg")}
+                width="800"
+                height="800"
+                alt={site.name}
+                fetchPriority="high"
+              />
+            </picture>
           </div>
 
           <svg
@@ -47,25 +76,29 @@ export default function Hero() {
             <path
               d="M78 14 C52 120 36 250 22 384"
               pathLength="1"
-              style={delay(1.7)}
+              style={delay(0.3)}
             />
             <path
-              d="M176 372 L204 326 L224 362 L258 296 L276 334"
+              d="M258 318 C250 384 150 410 64 384 L84 404 L64 384 L91 379"
               pathLength="1"
-              style={delay(2.1)}
+              style={delay(0.4)}
             />
           </svg>
         </div>
       </div>
 
-      <a href="#projects" className="hero-scroll" style={delay(2.2)}>
+      <a
+        href="#projects"
+        className={`hero-scroll${hasScrolled ? " is-scrolled" : ""}`}
+        style={delay(0.6)}
+      >
         <span className="hero-scroll-mask">
-          <span className="hero-scroll-text" style={delay(1.6)}>
+          <span className="hero-scroll-text" style={delay(0.3)}>
             Scroll
           </span>
         </span>
         <span className="hero-scroll-mask">
-          <span className="hero-scroll-text" style={delay(1.75)}>
+          <span className="hero-scroll-text" style={delay(0.38)}>
             to explore
           </span>
         </span>

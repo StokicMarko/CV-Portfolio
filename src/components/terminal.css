@@ -1,0 +1,154 @@
+.terminal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(8, 8, 16, 0.72);
+}
+
+.terminal {
+  display: flex;
+  flex-direction: column;
+  width: min(44rem, 100%);
+  height: min(30rem, 80svh);
+  border: 1px solid rgba(165, 180, 252, 0.3);
+  border-radius: 0.9rem;
+  background: #0b0b16;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  font-size: 0.92rem;
+  animation: terminal-in 0.22s var(--ease-swift);
+}
+
+.terminal-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem 0.6rem 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terminal-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.terminal-hint {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.terminal-close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.terminal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.terminal-log {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem 1.25rem;
+}
+
+.terminal-line {
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-text-soft);
+}
+
+.terminal-line.is-input {
+  color: var(--color-text-bright);
+}
+
+.terminal-line.is-error {
+  color: #fca5a5;
+}
+
+.terminal-mark {
+  color: var(--accent-line);
+  font-weight: 600;
+}
+
+.terminal-label {
+  display: inline-block;
+  min-width: 9.5rem;
+  margin-right: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.terminal-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+
+.terminal-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terminal-prompt:focus-within {
+  outline: 2px solid var(--accent-line);
+  outline-offset: -2px;
+  border-radius: 0 0 0.9rem 0.9rem;
+}
+
+.terminal-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--color-text-bright);
+  font: inherit;
+}
+
+@keyframes terminal-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+}
+
+@media screen and (max-width: 40rem) {
+  .terminal-label {
+    display: block;
+    min-width: 0;
+    margin-right: 0;
+  }
+
+  .terminal-hint {
+    display: none;
+  }
+
+  .terminal-close {
+    margin-left: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal {
+    animation: none;
+  }
+}

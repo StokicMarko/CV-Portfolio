@@ -1,96 +1,268 @@
-.resume-card {
-  background-color: rgba(255, 255, 255, 0.03);
-  border-left: 3px solid #8659c9;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+.resume-timelines {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4rem;
 }
 
-.resume-card h3 {
-  font-size: 1.3rem;
-  color: #a5b4fc;
-  margin-bottom: 0.8rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 0.4rem;
+.timeline {
+  list-style: none;
 }
 
-.resume-card p {
-  color: #e2e8f0;
+.timeline-entry {
+  --period-width: 6.5rem;
+  --line-gap: 2rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--period-width) 1fr;
+  column-gap: var(--line-gap);
+  padding-bottom: 2.25rem;
+}
+
+.timeline-entry:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-entry::before {
+  content: "";
+  position: absolute;
+  top: 0.55rem;
+  bottom: -0.55rem;
+  left: calc(var(--period-width) + var(--line-gap) / 2);
+  width: 1px;
+  background: rgba(196, 181, 253, 0.4);
+}
+
+.timeline-entry:last-child::before {
+  display: none;
+}
+
+.timeline-entry::after {
+  content: "";
+  position: absolute;
+  top: 0.4rem;
+  left: calc(var(--period-width) + var(--line-gap) / 2 - 4.5px);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent-line);
+  box-shadow: 0 0 0 4px rgba(196, 181, 253, 0.18);
+}
+
+.timeline-period {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.timeline-start {
+  color: var(--color-accent);
+}
+
+.timeline-end {
   font-size: 0.95rem;
-  line-height: 1.5rem;
-  margin-bottom: 0.5rem;
+  color: var(--color-text);
 }
 
-.resume-card strong {
-  color: #f1f5f9;
-}
-
-.personal-info {
-  border-left: none;
-  text-align: center;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.name-title {
-  font-size: 1.8rem;
-  color: #f1f5f9;
-  margin-bottom: 0.3rem;
-}
-
-.subtitle {
-  color: #a5b4fc;
+.timeline-title {
   font-size: 1.05rem;
-  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-bright);
 }
 
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  align-items: center;
-}
-
-.contact-info p {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #cbd5e1;
-  margin: 0;
-}
-
-.entry {
-  margin-bottom: 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.entry-place {
-  color: #cbd5e1;
+.timeline-place {
+  margin-top: 0.15rem;
   font-size: 0.9rem;
+  color: var(--color-text);
 }
 
-.entry-period {
-  color: #a5b4fc;
-  font-size: 0.85rem;
+.timeline-description {
+  margin-top: 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--color-text-soft);
 }
 
 .entry-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  align-self: flex-start;
-  color: #a5b4fc;
+  display: inline-block;
+  margin-top: 0.4rem;
   font-size: 0.85rem;
-  text-decoration: none;
+  color: var(--color-accent);
 }
 
 .entry-link:hover {
-  text-decoration: underline;
+  color: var(--accent-line);
 }
 
-.entry p {
-  margin-top: 0.3rem;
+.resume-block {
+  margin-top: 4.5rem;
+}
+
+.resume-subtitle {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.resume-block > .resume-subtitle {
+  margin-bottom: 1.25rem;
+}
+
+.chip-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.chip-group-label {
+  margin-bottom: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.chip {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(165, 180, 252, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.85rem;
+  line-height: 1.3;
+  color: var(--color-text-soft);
+}
+
+.chip strong {
+  margin-right: 0.5rem;
+  font-weight: 600;
+  color: var(--color-text-bright);
+}
+
+.resume-secondary {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 0 4rem;
+  margin-top: 4.5rem;
+}
+
+.resume-secondary .resume-block {
+  margin-top: 0;
+}
+
+.achievements {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+}
+
+.achievements li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--color-accent-strong);
+}
+
+.achievements strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-bright);
+}
+
+.achievements span {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.resume-volunteer {
+  margin-top: 4.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.resume-volunteer summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.resume-volunteer summary::-webkit-details-marker {
+  display: none;
+}
+
+.resume-volunteer summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.3rem;
+  border-right: 2px solid var(--color-accent);
+  border-bottom: 2px solid var(--color-accent);
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.25s var(--ease-swift);
+}
+
+.resume-volunteer[open] summary::after {
+  transform: translateY(25%) rotate(-135deg);
+}
+
+.resume-volunteer .timeline {
+  max-width: 40rem;
+  padding: 0.75rem 0 2.5rem;
+}
+
+@media screen and (max-width: 56rem) {
+  .resume-timelines {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+
+  .resume-secondary {
+    grid-template-columns: 1fr;
+    gap: 4.5rem 0;
+  }
+}
+
+@media screen and (max-width: 30rem) {
+  .timeline-entry {
+    --period-width: 4.6rem;
+    --line-gap: 1.25rem;
+  }
+
+  .timeline-period {
+    font-size: 1rem;
+  }
+
+  .timeline-end {
+    font-size: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-volunteer summary::after {
+    transition: none;
+  }
 }

@@ -1,33 +1,54 @@
-// Central place for all portfolio content. Edit this file to update the
-// site; components just read from it.
-
 export const site = {
   name: "Marko Stokic",
-  tagline: "Student, Developer & Boardgames enthusiast",
+  tagline:
+    "Full-stack developer (.NET · Angular · React), studying Software Engineering at VIA, with a growing focus on security.",
+  availability: "Open to student jobs (~10h/week) · Horsens / Aarhus",
   email: "m.markostokic@gmail.com",
   phone: "(+45) 52 79 06 55",
   location: "Horsens, Denmark",
   summary:
     "Software Technology Engineering student at VIA University College and full stack developer, building apps with C#/.NET, Angular and React. Working as a student frontend developer and programming tutor while picking up cybersecurity along the way.",
   github: "https://github.com/StokicMarko",
+  linkedin: "https://www.linkedin.com/in/stokic-marko/",
+  cvUrl: "Marko_Stokic_CV.pdf",
+  currently: {
+    building: "",
+    learning: "",
+    playing: "",
+  },
 };
+
+export const sections = {
+  about: { title: "About", subline: "a bit about me" },
+  experience: { title: "Experience", subline: "where I've worked" },
+  education: { title: "Education", subline: "where I've studied" },
+  skills: { title: "Technical Skills" },
+  certifications: { title: "Certifications & Achievements" },
+  languages: { title: "Languages" },
+  volunteer: { title: "Volunteer Work" },
+};
+
+export const closing = {
+  title: "Let's build something",
+  subline: "Open to student jobs and 2027 internships.",
+};
+
+export const about = [
+  "Hi! I am Marko Stokic, a Software Technology Engineering student at VIA University College in Horsens, Denmark. I have always enjoyed exploring how technology works and finding creative ways to solve problems, which naturally led me toward software development and, more recently, an interest in cybersecurity. I want to keep improving my skills and learn how to make systems safer and more reliable. Alongside my studies I work as a student frontend developer and as a programming tutor, helping first-year students with programming fundamentals.",
+  "Outside of my studies, I like keeping active: I go to the gym about four times a week, which helps me stay focused and balanced. I also spend some of my time volunteering as a barista at VIA's campus café, where I am preparing to take on a management role, as Vice-President of ESG (Engineer Social Games), and with Pangaea Youth, organizing social events to bring people together and create good vibes.",
+  "In my free time, I am a big fan of board games. I love strategy, teamwork, and a bit of friendly competition. Overall, I try to keep learning new things, meeting new people, and enjoying the process along the way.",
+];
 
 export const projects = [
   {
-    title: "Portfolio",
-    icon: "LayoutTemplate",
-    tech: "React, Vite, Lenis, Canvas",
+    title: "DESMI Seaweed (SEP3)",
+    icon: "Waves",
+    period: "Sep 2026 - Dec 2026",
+    team: "Team of 4",
+    tech: "Java, gRPC, C# .NET, Blazor",
     description:
-      "This site: a single-page portfolio with a canvas flocking background, an SVG intro and smooth, scroll-driven project cards.",
-    url: "https://github.com/StokicMarko/CV-Portfolio",
-  },
-  {
-    title: "Kingdom Simulator",
-    icon: "Castle",
-    tech: "Java, Concurrency, Design Patterns",
-    description:
-      "A multithreaded kingdom simulation with miners, transporters and a guarded treasure room, built on Singleton, Multiton, Proxy, Adapter, Producer-Consumer and Readers-Writers patterns.",
-    url: "https://github.com/StokicMarko/kingdom-simulator",
+      "A real-client semester project: a distributed system behind an independent website for DESMI Seaweed, with an admin dashboard, draft-to-live approvals, EN/ES/FR content and a country-level installation map.",
+    url: "",
   },
   {
     title: "Forum-ish",
@@ -38,14 +59,6 @@ export const projects = [
     url: "https://github.com/StokicMarko/Forum-ish",
   },
   {
-    title: "Ruu",
-    icon: "ChartColumn",
-    tech: "Electron, Node.js, Express, Sequelize, Riot API",
-    description:
-      "A desktop client for League of Legends statistics: summoner profiles, match details and server-wide dashboards, backed by a small Express service that talks to the Riot Games API.",
-    url: "https://github.com/StokicMarko/ruu-lol-statistic-app",
-  },
-  {
     title: "LLM Note Normalizer",
     icon: "Sparkles",
     tech: "Python, Claude API",
@@ -54,7 +67,31 @@ export const projects = [
     url: "https://github.com/StokicMarko/llm-note-normalizer",
   },
   {
-    title: "Chess Game",
+    title: "Kingdom Simulator",
+    icon: "Castle",
+    tech: "Java, Concurrency, Design Patterns",
+    description:
+      "A multithreaded kingdom simulation with miners, transporters and a guarded treasure room, built on Singleton, Multiton, Proxy, Adapter, Producer-Consumer and Readers-Writers patterns.",
+    url: "https://github.com/StokicMarko/kingdom-simulator",
+  },
+  {
+    title: "Ruu",
+    icon: "ChartColumn",
+    tech: "Electron, Node.js, Express, Sequelize, Riot API",
+    description:
+      "A desktop client for League of Legends statistics: summoner profiles, match details and server-wide dashboards, backed by a small Express service that talks to the Riot Games API.",
+    url: "https://github.com/StokicMarko/ruu-lol-statistic-app",
+  },
+  {
+    title: "Portfolio",
+    icon: "LayoutTemplate",
+    tech: "React, Vite, Lenis, WebGL",
+    description:
+      "This site: a single-page portfolio with a WebGL contour-line shader background, a pinned stack of project cards driven by smooth scroll, and a one-time intro loader.",
+    url: "https://github.com/StokicMarko/CV-Portfolio",
+  },
+  {
+    title: "Chess Game (2018 throwback)",
     icon: "Swords",
     tech: "Java, Swing",
     description:
@@ -74,15 +111,31 @@ export const skills = {
     "SQL",
     "Python",
   ],
-  Frameworks: ["React", "Angular", ".NET", "ASP.NET"],
+  "Frameworks & Libraries": [
+    "React",
+    "Angular",
+    ".NET",
+    "ASP.NET",
+    "Blazor",
+    "EF Core",
+    "Node.js/Express",
+    "Electron",
+    "gRPC",
+  ],
   "Tools & Databases": [
     "Git",
-    "Unit and end-to-end testing",
+    "Jasmine",
+    "JUnit",
     "Jira",
     "SQL Server",
     "PostgreSQL",
     "MySQL",
     "CI/CD basics",
+  ],
+  Security: [
+    "Google Cybersecurity Professional Certificate",
+    "TryHackMe / Hack The Box practice",
+    "OWASP Top 10 awareness",
   ],
 };
 
@@ -122,7 +175,7 @@ export const experience = [
     place: "Folkæt, Remote",
     period: "Sep 2026 - Present",
     description:
-      "Taking on frontend development tasks as part of a small team, contributing to UI features on an as-needed basis alongside my studies.",
+      "Implementing the new front page, the first thing clients and other visitors see when they land on the site, based on a designer's new design. Part of a small team, alongside my studies.",
   },
   {
     title: "Programming Tutor",
@@ -154,11 +207,6 @@ export const experience = [
 
 export const certifications = [
   {
-    title: "Personal portfolio website",
-    description:
-      "Rebuilt in React (work in progress), available at stokicmarko.github.io/CV-Portfolio.",
-  },
-  {
     title: "University Hackathon (VIA, Mar 2026)",
     description: "Built a team project in React under time pressure.",
   },
@@ -176,7 +224,7 @@ export const languages = [
   { name: "Italian", level: "Native" },
   { name: "English", level: "C1 (Fluent)" },
   { name: "Serbo-Croatian", level: "C1 (Fluent)" },
-  { name: "Danish", level: "Beginner (Module 3)" },
+  { name: "Danish", level: "A2 · actively learning" },
 ];
 
 export const volunteer = [
@@ -206,8 +254,6 @@ export const volunteer = [
   },
 ];
 
-// Shown in the Colophon section. `url` is optional; add as many
-// inspirations as you like and `note` says what was taken from each.
 export const credits = {
   builtWith: [
     { name: "React", url: "https://react.dev", note: "UI" },

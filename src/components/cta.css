@@ -1,0 +1,54 @@
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.cta-row .pill-button {
+  height: 2.75rem;
+  padding: 0 1.3rem;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.cta-toast {
+  position: fixed;
+  right: 0;
+  bottom: 1.75rem;
+  left: 0;
+  z-index: 60;
+  width: fit-content;
+  margin-inline: auto;
+  pointer-events: none;
+}
+
+.cta-toast:not(:empty) {
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--color-accent-border);
+  border-radius: 3rem;
+  background: rgba(15, 15, 26, 0.94);
+  color: var(--color-text-bright);
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  animation: toast-in 0.3s var(--ease-swift);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media screen and (max-width: 56rem) {
+  .cta-row {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-toast:not(:empty) {
+    animation: none;
+  }
+}

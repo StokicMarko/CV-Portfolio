@@ -1,4 +1,3 @@
-/* Pinned, scroll-driven card stack (inspired by lenis.dev "brings the heat") */
 
 .projects-stack {
   position: relative;
@@ -7,12 +6,10 @@
   --dy: 1.4rem;
   --card-h: min(29rem, calc(100svh - 15rem));
   --card-w: min(24rem, calc(var(--card-h) * 0.86));
-  --display: "Anton", "Impact", sans-serif;
-  --wide: "Unbounded", "Inter", sans-serif;
 }
 
 .projects-track {
-  height: calc(100svh + var(--n) * 60svh);
+  height: calc(100svh + var(--n) * 40svh);
 }
 
 .projects-stage {
@@ -30,7 +27,6 @@
   margin: 0 auto;
 }
 
-/* Heading, top right */
 .projects-head {
   position: absolute;
   top: 0;
@@ -40,31 +36,31 @@
 }
 
 .projects-eyebrow {
-  font-family: var(--wide);
   color: var(--color-accent);
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 0.6rem;
 }
 
 .projects-title {
-  font-family: var(--wide);
+  font-family: var(--font-display);
   color: #f1f5f9;
-  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
-  font-weight: 800;
-  line-height: 1.05;
+  font-size: clamp(2.4rem, 4.6vw, 3.6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
 }
 
 .projects-title span {
   display: block;
-  font-family: var(--wide);
-  font-weight: 800;
-  color: rgba(241, 245, 249, 0.3);
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: rgba(241, 245, 249, 0.65);
 }
 
-/* Big glowing icon of the active project, seen through the glass cards */
 .stack-visual {
   --size: min(26rem, 40vw);
   position: absolute;
@@ -76,6 +72,7 @@
   transform: translateY(calc(var(--p, 0) * -2.5rem))
     rotate(calc(var(--p, 0) * 18deg));
   pointer-events: none;
+  will-change: transform;
 }
 
 .stack-glow {
@@ -84,10 +81,11 @@
   background: radial-gradient(
     circle,
     rgba(134, 89, 201, 0.55),
+    rgba(110, 66, 178, 0.4) 16%,
     rgba(76, 29, 149, 0.25) 40%,
-    transparent 68%
+    rgba(76, 29, 149, 0.1) 56%,
+    transparent 70%
   );
-  filter: blur(20px);
   animation: stack-glow 6s ease-in-out infinite;
 }
 
@@ -106,18 +104,21 @@
   color: #c4b5fd;
   opacity: 0;
   transform: scale(0.85) rotate(-10deg);
+  transition:
+    opacity 0.7s ease,
+    transform 0.9s var(--ease-swift),
+    filter 0s linear 0.7s;
+}
+
+.stack-bigicon.is-active {
+  opacity: 0.6;
+  transform: none;
   filter: drop-shadow(0 0 28px rgba(134, 89, 201, 0.9));
   transition:
     opacity 0.7s ease,
     transform 0.9s var(--ease-swift);
 }
 
-.stack-bigicon.is-active {
-  opacity: 0.6;
-  transform: none;
-}
-
-/* Cards */
 .stack-cards {
   position: absolute;
   top: 0;
@@ -145,6 +146,7 @@
     0 24px 60px rgba(0, 0, 0, 0.35);
   opacity: 0;
   pointer-events: none;
+  perspective: 1400px;
   translate: calc(var(--i) * var(--dx) + 3rem) calc(var(--i) * var(--dy) + 4rem);
   transition:
     opacity 0.5s var(--ease-swift),
@@ -166,10 +168,8 @@
   border-color: rgba(165, 180, 252, 0.7);
 }
 
-/* A covered card shows only the strip the card above leaves uncovered (its
-   left --dx), so its text is cut off at that card's edge like a real stack.
-   --dx minus the card's left padding is the width of the visible text. */
-.stack-card.is-buried .stack-body {
+.stack-card.is-buried .stack-body,
+.stack-card.is-buried .stack-shot {
   clip-path: inset(0 calc(100% - (var(--dx) - 1.5rem)) 0 0);
 }
 
@@ -178,10 +178,85 @@
 }
 
 .stack-num {
-  font-family: var(--display);
+  font-family: var(--font-display);
   font-size: clamp(3.2rem, 6vw, 5rem);
   line-height: 1;
   color: var(--color-accent);
+}
+
+.stack-flip {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.7s var(--ease-swift);
+}
+
+.stack-flip.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.stack-face {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.stack-front {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.stack-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  transform: rotateY(180deg);
+}
+
+.stack-back-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.stack-back-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.25;
+  color: var(--accent-line);
+}
+
+.stack-flip-button {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.stack-shot {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  margin-block: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.75rem;
+  object-fit: cover;
+  object-position: top center;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.6s var(--ease-swift);
 }
 
 .stack-body {
@@ -196,10 +271,11 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  font-family: var(--wide);
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: #f1f5f9;
 }
@@ -209,18 +285,70 @@
   color: var(--color-accent);
 }
 
-/* The global `* { color }` rule would otherwise recolour the svg paths */
-.stack-title svg *,
-.stack-bigicon * {
-  color: inherit;
+.stack-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.2rem, 1fr));
+  gap: 0.45rem 0.9rem;
 }
 
-.stack-tech {
+.stack-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.stack-stat.is-wide {
+  grid-column: 1 / -1;
+}
+
+.stack-stat dt {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.stack-stat dd {
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-text-soft);
+}
+
+.stack-stat.is-wide dd {
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-accent);
+}
+
+.stack-pips {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 1.2em;
+}
+
+.stack-pip {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 50%;
+}
+
+.stack-pip.is-on {
+  background: var(--color-accent);
+}
+
+.stack-highlight {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  color: #c4b5fd;
 }
 
 .stack-desc {
@@ -229,14 +357,19 @@
   color: #cbd5e1;
 }
 
-.stack-link {
+.stack-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
   margin-top: 0.3rem;
+}
+
+.stack-link {
   font-size: 0.85rem;
   font-weight: 600;
   color: #b79cf0;
 }
 
-/* Index list, bottom right */
 .stack-index {
   position: absolute;
   z-index: 20;
@@ -244,15 +377,16 @@
   bottom: 0;
   list-style: none;
   text-align: right;
-  font-family: var(--wide);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(241, 245, 249, 0.3);
+  color: rgba(241, 245, 249, 0.65);
 }
 
 .stack-index button {
-  font-family: var(--wide);
+  font-family: inherit;
+  font-weight: inherit;
   font-size: inherit;
   line-height: inherit;
   letter-spacing: inherit;
@@ -274,8 +408,8 @@
 }
 
 .stack-index button span {
-  font-family: var(--display);
-  color: inherit;
+  font-family: var(--font-display);
+  font-weight: 400;
   margin-right: 0.4rem;
 }
 
@@ -283,7 +417,6 @@
   color: var(--color-accent);
 }
 
-/* Narrow screens: heading on top, smaller offsets */
 @media screen and (max-width: 64rem) {
   .projects-stack {
     --dx: clamp(0.4rem, 2.5vw, 2.5rem);
@@ -303,7 +436,7 @@
   }
 
   .projects-title {
-    font-size: 1.4rem;
+    font-size: 2rem;
   }
 
   .projects-title span {
@@ -334,13 +467,25 @@
     gap: 0.4rem;
   }
 
-  /* The offset is too small to show any text, only the number peeks out */
-  .stack-card.is-buried .stack-body {
+  .stack-card.is-buried .stack-body,
+  .stack-card.is-buried .stack-shot {
     clip-path: inset(0 100% 0 0);
   }
 
-  .stack-title {
+  .stack-shot {
+    margin-block: 0.6rem;
+  }
+
+  .stack-highlight {
     font-size: 0.95rem;
+  }
+
+  .stack-back-text {
+    font-size: 1.15rem;
+  }
+
+  .stack-title {
+    font-size: 1.15rem;
   }
 
   .stack-desc {
@@ -353,7 +498,6 @@
   }
 }
 
-/* No pinning or sliding: show every card in a plain grid */
 @media (prefers-reduced-motion: reduce) {
   .projects-track {
     height: auto;
@@ -400,7 +544,34 @@
     display: none;
   }
 
-  .stack-card.is-buried .stack-body {
+  .stack-card.is-buried .stack-body,
+  .stack-card.is-buried .stack-shot {
     clip-path: none;
+  }
+
+  .stack-shot {
+    min-height: 9rem;
+  }
+
+  .stack-card {
+    perspective: none;
+  }
+
+  .stack-flip {
+    transform-style: flat;
+    transition: none;
+    gap: 1.25rem;
+  }
+
+  .stack-face {
+    backface-visibility: visible;
+  }
+
+  .stack-back {
+    position: static;
+    justify-content: flex-start;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    transform: none;
   }
 }
