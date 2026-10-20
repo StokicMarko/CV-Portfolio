@@ -12,12 +12,61 @@ const HELP_ROWS = [
   ["clear", "clear the screen"],
 ];
 
+const COMMAND_NAMES = [
+  "help",
+  "whoami",
+  "ls",
+  "open",
+  "cat",
+  "contact",
+  "clear",
+  "sudo",
+];
+
+const shortName = (project) =>
+  project.title.toLowerCase().replace(/\s*\(.*\)$/, "");
+
+const ARGUMENT_OPTIONS = {
+  ls: () => ["projects"],
+  cat: () => ["cv"],
+  open: () => projects.map(shortName),
+};
+
 const pad = (n) => String(n).padStart(2, "0");
 const normalize = (text) =>
   text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+
+const commonPrefix = (words) =>
+  words.reduce((prefix, word) => {
+    let length = 0;
+    while (length < prefix.length && prefix[length] === word[length]) length++;
+    return prefix.slice(0, length);
+  });
+
+export function completeInput(input) {
+  const text = input.trimStart();
+  const argumentStart = text.match(/^\S+\s+/);
+  const base = argumentStart ? argumentStart[0] : "";
+  const partial = text.slice(base.length);
+  const candidates = argumentStart
+    ? (ARGUMENT_OPTIONS[base.trim().toLowerCase()]?.() ?? [])
+    : COMMAND_NAMES;
+  const matches = candidates.filter((candidate) =>
+    candidate.startsWith(partial.toLowerCase()),
+  );
+
+  if (matches.length === 0) return { value: input, options: [] };
+  if (matches.length === 1) {
+    return { value: `${base}${matches[0]} `, options: matches };
+  }
+
+  const prefix = commonPrefix(matches);
+  const completed = prefix.length > partial.length ? prefix : partial;
+  return { value: `${base}${completed}`, options: matches };
+}
 
 const error = (...lines) => ({ lines, tone: "error" });
 
@@ -42,6 +91,7 @@ function listProjects() {
 
 function findProject(query) {
   const needle = normalize(query);
+  if (!needle) return null;
   if (/^\d+$/.test(needle)) return projects[Number(needle) - 1] ?? null;
   const matches = projects.filter((p) => normalize(p.title).includes(needle));
   return matches.length === 1 ? matches[0] : matches;

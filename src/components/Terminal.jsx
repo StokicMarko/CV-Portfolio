@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { getLenis } from "../hooks/useLenis";
-import { runCommand } from "./terminalCommands";
+import { completeInput, runCommand } from "./terminalCommands";
+import { Prompt } from "./TerminalParts";
 import "./terminal.css";
 
 const WELCOME = "Welcome. Type 'help' to see what you can do here.";
 const FOCUSABLE = "a[href], button:not([disabled]), input:not([disabled])";
+const NON_BREAKING_SPACE = "\u00a0";
 
 export default function Terminal({ onClose }) {
   const [entries, setEntries] = useState([
     { id: 0, kind: "output", node: WELCOME },
   ]);
   const [value, setValue] = useState("");
+  const [caret, setCaret] = useState(0);
   const nextId = useRef(1);
   const history = useRef([]);
   const historyPosition = useRef(0);
+  const listedOptionsFor = useRef(null);
   const dialogRef = useRef(null);
   const inputRef = useRef(null);
   const logRef = useRef(null);
@@ -44,10 +48,17 @@ export default function Terminal({ onClose }) {
     if (log) log.scrollTop = log.scrollHeight;
   }, [entries]);
 
+  const replaceValue = (next) => {
+    setValue(next);
+    setCaret(next.length);
+  };
+
+  const followCaret = (event) => setCaret(event.target.selectionStart ?? 0);
+
   const submit = (event) => {
     event.preventDefault();
     const command = value.trim();
-    setValue("");
+    replaceValue("");
     if (!command) return;
 
     history.current.push(command);
@@ -79,7 +90,38 @@ export default function Terminal({ onClose }) {
       Math.max(0, historyPosition.current + step),
     );
     historyPosition.current = position;
-    setValue(history.current[position] ?? "");
+    replaceValue(history.current[position] ?? "");
+  };
+
+  const autocomplete = () => {
+    const { value: completed, options } = completeInput(value);
+    if (completed !== value) {
+      listedOptionsFor.current = options.length > 1 ? completed : null;
+      replaceValue(completed);
+      return;
+    }
+    if (options.length < 2) return;
+
+    if (listedOptionsFor.current !== value) {
+      listedOptionsFor.current = value;
+      return;
+    }
+    listedOptionsFor.current = null;
+    setEntries((current) => [
+      ...current,
+      { id: nextId.current++, kind: "input", node: value },
+      { id: nextId.current++, kind: "output", node: options.join("   ") },
+    ]);
+  };
+
+  const handleInputKeyDown = (event) => {
+    if (event.key === "Tab" && !event.shiftKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      autocomplete();
+      return;
+    }
+    browseHistory(event);
   };
 
   const handleKeyDown = (event) => {
@@ -125,7 +167,7 @@ export default function Terminal({ onClose }) {
       >
         <header className="terminal-bar">
           <span className="terminal-title">marko@portfolio: ~</span>
-          <span className="terminal-hint">Esc to close</span>
+          <span className="terminal-hint">Tab to complete · Esc to close</span>
           <button
             type="button"
             className="terminal-close"
@@ -144,32 +186,41 @@ export default function Terminal({ onClose }) {
         >
           {entries.map((entry) => (
             <p key={entry.id} className={`terminal-line is-${entry.kind}`}>
-              {entry.kind === "input" && (
-                <span className="terminal-mark" aria-hidden="true">
-                  ${" "}
-                </span>
-              )}
+              {entry.kind === "input" && <Prompt />}
               {entry.node}
             </p>
           ))}
         </div>
 
         <form className="terminal-prompt" onSubmit={submit}>
-          <span className="terminal-mark" aria-hidden="true">
-            $
+          <Prompt />
+          <span className="terminal-field">
+            <span className="terminal-typed" aria-hidden="true">
+              {value.slice(0, caret)}
+              <span className="terminal-cursor">
+                {value[caret] ?? NON_BREAKING_SPACE}
+              </span>
+              {value.slice(caret + 1)}
+            </span>
+            <input
+              ref={inputRef}
+              className="terminal-input"
+              value={value}
+              onChange={(event) => {
+                listedOptionsFor.current = null;
+                setValue(event.target.value);
+                followCaret(event);
+              }}
+              onKeyDown={handleInputKeyDown}
+              onKeyUp={followCaret}
+              onSelect={followCaret}
+              aria-label="Command"
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
+            />
           </span>
-          <input
-            ref={inputRef}
-            className="terminal-input"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            onKeyDown={browseHistory}
-            aria-label="Command"
-            autoComplete="off"
-            autoCapitalize="off"
-            autoCorrect="off"
-            spellCheck={false}
-          />
         </form>
       </div>
     </div>

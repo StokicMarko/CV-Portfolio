@@ -33,11 +33,7 @@ export default function Projects() {
   const idPrefix = useId();
   const stackRef = useRef(null);
   const trackRef = useRef(null);
-  const focusRequest = useRef(null);
   const [active, setActive] = useState(0);
-  const [hovered, setHovered] = useState(null);
-  const [toggled, setToggled] = useState(null);
-  const [flipOwner, setFlipOwner] = useState(0);
   const [reduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -64,18 +60,6 @@ export default function Projects() {
     };
   }, [reduced]);
 
-  if (flipOwner !== active) {
-    setFlipOwner(active);
-    setHovered(null);
-    setToggled(null);
-  }
-
-  useEffect(() => {
-    if (!focusRequest.current) return;
-    document.getElementById(focusRequest.current)?.focus();
-    focusRequest.current = null;
-  }, [toggled]);
-
   const scrollToCard = (index) => {
     const track = trackRef.current;
     const travel = track.offsetHeight - window.innerHeight;
@@ -97,21 +81,7 @@ export default function Projects() {
   const handleCard = (index, project) => {
     if (reduced) return openProject(project);
     if (index !== active) return scrollToCard(index);
-    if (project.learned) {
-      return setToggled((current) => (current === index ? null : index));
-    }
     return openProject(project);
-  };
-
-  const showBack = (index, backId) => {
-    focusRequest.current = backId;
-    setToggled(index);
-  };
-
-  const showFront = (toggleId) => {
-    focusRequest.current = toggleId;
-    setHovered(null);
-    setToggled(null);
   };
 
   return (
@@ -154,10 +124,6 @@ export default function Projects() {
                 const showId = `${idPrefix}-show-${i}`;
                 const titleId = `${idPrefix}-title-${i}`;
                 const descriptionId = `${idPrefix}-description-${i}`;
-                const toggleId = `${idPrefix}-toggle-${i}`;
-                const backId = `${idPrefix}-back-${i}`;
-                const canFlip = !reduced && isTop && Boolean(project.learned);
-                const isFlipped = canFlip && (hovered === i || toggled === i);
 
                 return (
                   <article
@@ -167,10 +133,6 @@ export default function Projects() {
                     }${isBuried ? " is-buried" : ""}`}
                     style={{ "--i": i }}
                     onClick={() => handleCard(i, project)}
-                    onPointerEnter={(e) => {
-                      if (canFlip && e.pointerType === "mouse") setHovered(i);
-                    }}
-                    onPointerLeave={() => setHovered(null)}
                     onKeyDown={(e) => {
                       if (isBuried && (e.key === "Enter" || e.key === " ")) {
                         e.preventDefault();
@@ -187,99 +149,52 @@ export default function Projects() {
                         Show
                       </span>
                     )}
-                    <div
-                      className={`stack-flip${isFlipped ? " is-flipped" : ""}`}
-                    >
-                      <div className="stack-face stack-front" inert={isFlipped}>
-                        <span className="stack-num">{pad(i + 1)}</span>
-                        {project.image && (
-                          <img
-                            className="stack-shot"
-                            src={assetUrl(project.image)}
-                            alt={`Screenshot of ${project.title}`}
-                            loading="lazy"
-                          />
-                        )}
-                        <div className="stack-body">
-                          <h3 id={titleId} className="stack-title">
-                            <Icon size={24} strokeWidth={1.75} />
-                            {project.title}
-                          </h3>
-                          <ProjectStats project={project} />
-                          {project.highlight && (
-                            <p className="stack-highlight">
-                              {project.highlight}
-                            </p>
-                          )}
-                          <p id={descriptionId} className="stack-desc">
-                            {project.description}
-                          </p>
-                          {(project.url || project.demo || canFlip) && (
-                            <div className="stack-links">
-                              {project.url && (
-                                <a
-                                  className="stack-link"
-                                  href={project.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  tabIndex={isTop || reduced ? 0 : -1}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  View on GitHub →
-                                </a>
-                              )}
-                              {project.demo && (
-                                <a
-                                  className="stack-link"
-                                  href={project.demo}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  tabIndex={isTop || reduced ? 0 : -1}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  Live demo →
-                                </a>
-                              )}
-                              {canFlip && (
-                                <button
-                                  id={toggleId}
-                                  type="button"
-                                  className="stack-link stack-flip-button"
-                                  aria-expanded={isFlipped}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    showBack(i, backId);
-                                  }}
-                                >
-                                  What I learned ↻
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {project.learned && (
-                        <div
-                          className="stack-face stack-back"
-                          role="group"
-                          aria-label="What I learned"
-                          inert={!reduced && !isFlipped}
-                        >
-                          <p className="stack-back-label">What I learned</p>
-                          <p className="stack-back-text">{project.learned}</p>
-                          {canFlip && (
-                            <button
-                              id={backId}
-                              type="button"
-                              className="stack-link stack-flip-button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                showFront(toggleId);
-                              }}
+                    <span className="stack-num">{pad(i + 1)}</span>
+                    {project.image && (
+                      <img
+                        className="stack-shot"
+                        src={assetUrl(project.image)}
+                        alt={`Screenshot of ${project.title}`}
+                        loading="lazy"
+                      />
+                    )}
+                    <div className="stack-body">
+                      <h3 id={titleId} className="stack-title">
+                        <Icon size={24} strokeWidth={1.75} />
+                        {project.title}
+                      </h3>
+                      <ProjectStats project={project} />
+                      {project.highlight && (
+                        <p className="stack-highlight">{project.highlight}</p>
+                      )}
+                      <p id={descriptionId} className="stack-desc">
+                        {project.description}
+                      </p>
+                      {(project.url || project.demo) && (
+                        <div className="stack-links">
+                          {project.demo && (
+                            <a
+                              className="stack-link"
+                              href={project.demo}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              tabIndex={isTop || reduced ? 0 : -1}
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              ↺ Back
-                            </button>
+                              Live demo →
+                            </a>
+                          )}
+                          {project.url && (
+                            <a
+                              className="stack-link"
+                              href={project.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              tabIndex={isTop || reduced ? 0 : -1}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              View on GitHub →
+                            </a>
                           )}
                         </div>
                       )}

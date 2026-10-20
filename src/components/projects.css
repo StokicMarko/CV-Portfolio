@@ -146,7 +146,6 @@
     0 24px 60px rgba(0, 0, 0, 0.35);
   opacity: 0;
   pointer-events: none;
-  perspective: 1400px;
   translate: calc(var(--i) * var(--dx) + 3rem) calc(var(--i) * var(--dy) + 4rem);
   transition:
     opacity 0.5s var(--ease-swift),
@@ -182,68 +181,6 @@
   font-size: clamp(3.2rem, 6vw, 5rem);
   line-height: 1;
   color: var(--color-accent);
-}
-
-.stack-flip {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  transform-style: preserve-3d;
-  transition: transform 0.7s var(--ease-swift);
-}
-
-.stack-flip.is-flipped {
-  transform: rotateY(180deg);
-}
-
-.stack-face {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-.stack-front {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: space-between;
-  min-height: 0;
-}
-
-.stack-back {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 1rem;
-  transform: rotateY(180deg);
-}
-
-.stack-back-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-}
-
-.stack-back-text {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.35rem;
-  line-height: 1.25;
-  color: var(--accent-line);
-}
-
-.stack-flip-button {
-  align-self: flex-start;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: inherit;
-  cursor: pointer;
 }
 
 .stack-shot {
@@ -360,6 +297,7 @@
 .stack-links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.3rem 1.1rem;
   margin-top: 0.3rem;
 }
@@ -480,10 +418,6 @@
     font-size: 0.95rem;
   }
 
-  .stack-back-text {
-    font-size: 1.15rem;
-  }
-
   .stack-title {
     font-size: 1.15rem;
   }
@@ -551,27 +485,5 @@
 
   .stack-shot {
     min-height: 9rem;
-  }
-
-  .stack-card {
-    perspective: none;
-  }
-
-  .stack-flip {
-    transform-style: flat;
-    transition: none;
-    gap: 1.25rem;
-  }
-
-  .stack-face {
-    backface-visibility: visible;
-  }
-
-  .stack-back {
-    position: static;
-    justify-content: flex-start;
-    padding-top: 1.1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    transform: none;
   }
 }
